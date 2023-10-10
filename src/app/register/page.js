@@ -1,12 +1,40 @@
 "use client";
 
 import { registrationFormControls } from "@/utils";
-import InputComponent from "../components/FormElements/InputComponent";
-import SelectComponent from "../components/FormElements/SelectComponent";
+import InputComponent from "@/components/FormElements/InputComponent";
+import SelectComponent from "@/components/FormElements/SelectComponent";
+import { useState } from "react";
+import { registerNewUser } from "../services/register";
 
 const isRegistered = false;
 
+const initialFormData = {
+	name: "",
+	email: "",
+	role: "customer",
+	password: "",
+};
+
 export default function Register() {
+	const [formData, setFormData] = useState(initialFormData);
+
+	function isFormValid() {
+		return formData &&
+			formData.name &&
+			formData.name.trim() !== "" &&
+			formData.email &&
+			formData.email.trim() !== "" &&
+			formData.password &&
+			formData.password.trim() !== ""
+			? true
+			: false;
+	}
+
+	async function handleRegisterOnSubmit() {
+		const data = await registerNewUser(formData);
+		console.log(data);
+	}
+
 	return (
 		<div className="bg-white relative">
 			<div className="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-8 mr-auto xl:px-5 lg:flex-row">
@@ -21,14 +49,41 @@ export default function Register() {
 									Login
 								</button>
 							) : (
-								<div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-9">
-									{registrationFormControls.map(({ id, type, placeholder, label, componentType, options }) => {
+								<div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
+									{registrationFormControls.map(({ id, type, placeholder, label, componentType, options }) =>
 										componentType === "input" ? (
-											<InputComponent label={label} id={id} type={type} placeholder={placeholder} />
+											<InputComponent
+												label={label}
+												type={type}
+												placeholder={placeholder}
+												onChange={(event) => {
+													setFormData({ ...formData, [id]: event.target.value });
+												}}
+												value={formData[id]}
+												key={label}
+											/>
 										) : componentType === "select" ? (
-											<SelectComponent label={label} id={id} type={type} placeholder={placeholder} options={options} />
-										) : null;
-									})}
+											<SelectComponent
+												label={label}
+												type={type}
+												placeholder={placeholder}
+												options={options}
+												onChange={(event) => {
+													setFormData({ ...formData, [id]: event.target.value });
+												}}
+												value={formData[id]}
+												key={label}
+											/>
+										) : null
+									)}
+									<button
+										className="disabled:opacity-50 inline-flex w-full items-center justify-center bg-black px-6 py-4 text-lg text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-side
+									"
+										disabled={!isFormValid()}
+										onClick={handleRegisterOnSubmit}
+									>
+										Register
+									</button>
 								</div>
 							)}
 						</div>

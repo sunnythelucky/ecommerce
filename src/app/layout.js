@@ -1,5 +1,5 @@
-import Navbar from "./components/Navbar";
-import GlobalState from "./context";
+import Navbar from "../components/Navbar";
+import GlobalState from "@/context";
 import "./globals.css";
 import { Inter } from "next/font/google";
 
