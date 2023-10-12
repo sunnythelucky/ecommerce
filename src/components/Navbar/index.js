@@ -4,12 +4,10 @@ import { GlobalContext } from "@/context";
 import { navOptions } from "@/utils";
 import { Fragment, useContext } from "react";
 import CommonModal from "@/components/CommonModal";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const isAdminView = true;
-const isAuthUser = false;
-const user = {
-	role: "admin",
-};
 
 function NavItems({ isModalView = false }) {
 	return (
@@ -35,7 +33,16 @@ function NavItems({ isModalView = false }) {
 }
 
 export default function Navbar() {
-	const { showNavModal, setShowNavModal } = useContext(GlobalContext);
+	const { showNavModal, setShowNavModal, user, isAuthUser, setIsAuthUser, setUser } = useContext(GlobalContext);
+	const router = useRouter();
+
+	function handleLogout() {
+		setIsAuthUser(false);
+		setUser(null);
+		Cookies.remove("token");
+		localStorage.clear();
+		router.push("/");
+	}
 
 	return (
 		<>
@@ -67,16 +74,22 @@ export default function Navbar() {
 							)
 						) : null}
 						{isAuthUser ? (
-							<button className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium tracking-wider text-white uppercase">
+							<button
+								onClick={handleLogout}
+								className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium tracking-wider text-white uppercase"
+							>
 								Logout
 							</button>
 						) : (
-							<button className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium tracking-wider text-white uppercase">
+							<button
+								onClick={() => router.push("/login")}
+								className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium tracking-wider text-white uppercase"
+							>
 								Login
 							</button>
 						)}
 						<button
-							onClick={() => setShowNavModal(!showNavModal)}
+							onClick={() => setShowNavModal(true)}
 							data-collapse-toggle="navbar-sticky"
 							type="button"
 							className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
