@@ -1,5 +1,8 @@
 import connectToDB from "@/database";
-import { jwt } from "jsonwebtoken";
+import User from "@/models/user";
+import { compare } from "bcryptjs";
+import Joi from "joi";
+import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
 const schema = Joi.object({
@@ -12,7 +15,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req) {
 	await connectToDB();
 
-	const { email, password } = await req.body;
+	const { email, password } = await req.json();
 
 	const { error } = schema.validate({ email, password });
 
